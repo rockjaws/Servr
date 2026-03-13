@@ -1,6 +1,6 @@
 ﻿namespace Servr.Domain.Interface;
 
-public interface IBill
+public interface IBill : IDiscountable
 {
     int BillId { get; }
     decimal BillTotal { get; }
