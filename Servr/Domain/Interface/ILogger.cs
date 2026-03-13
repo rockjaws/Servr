@@ -4,8 +4,9 @@ using System.Text;
 
 namespace Servr.Domain.Interface
 {
+  public enum LogLevel { INFO, WARNING, ERROR }
   public interface ILogger
   {
-    void Log(string level, string message);
+    void Log(LogLevel level, string message);
   }
 }

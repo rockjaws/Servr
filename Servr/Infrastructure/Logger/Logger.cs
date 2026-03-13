@@ -7,7 +7,7 @@ namespace Servr.Infrastructure.Logger
 {
   public class Logger : ILogger
   {
-    public void Log(string level, string message)
+    public void Log(LogLevel level, string message)
     {
       string logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] - {message}";
       // implement save to file
