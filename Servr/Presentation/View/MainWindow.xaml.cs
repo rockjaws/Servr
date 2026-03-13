@@ -8,17 +8,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Servr.Domain.Interface;
+using Servr.Infrastructure.Logger;
 
 namespace Servr
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+  /// <summary>
+  /// Interaction logic for MainWindow.xaml
+  /// </summary>
+
+  public partial class MainWindow : Window
+  {
+    private readonly ILogger _logger;
+    public MainWindow(ILogger logger)
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+      InitializeComponent();
+      _logger = logger;
+      _logger.Log(LogLevel.INFO, "Application starting");
     }
+  }
 }
