@@ -13,18 +13,18 @@ using Servr.Infrastructure.Logger;
 
 namespace Servr
 {
-  /// <summary>
-  /// Interaction logic for MainWindow.xaml
-  /// </summary>
-
-  public partial class MainWindow : Window
-  {
-    private readonly ILogger _logger;
-    public MainWindow(ILogger logger)
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
-      InitializeComponent();
-      _logger = logger;
-      _logger.Log(LogLevel.INFO, "Application starting");
+        private readonly ILogger _logger;
+
+        public MainWindow(ILogger logger)
+        {
+            InitializeComponent();
+            _logger = logger;
+            _logger.Log(LogLevel.INFO, "Application starting");
+        }
     }
-  }
 }
