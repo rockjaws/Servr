@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Servr.ViewModel
 {
-    class MainViewModel
+    public class MainViewModel
     {
     }
 }

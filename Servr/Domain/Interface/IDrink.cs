@@ -6,5 +6,6 @@ namespace Servr.Model
 {
     public interface IDrink
     {
+
     }
 }
