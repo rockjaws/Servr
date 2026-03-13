@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Servr.Model
+namespace Servr.Domain.Interface
 {
-    public interface IDrink
+    public interface IDrink : IItem
     {
-
+        int Volume { get; }
     }
 }
