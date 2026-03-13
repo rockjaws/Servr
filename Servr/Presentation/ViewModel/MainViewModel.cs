@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Servr.ViewModel
+﻿namespace Servr.Presentation.ViewModel
 {
-    public class MainViewModel
-    {
-    }
+    public class MainViewModel { }
 }
