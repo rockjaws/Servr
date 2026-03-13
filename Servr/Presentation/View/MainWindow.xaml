@@ -29,7 +29,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border>
-                            <TextBlock Text="{Binding CategoryName}" FontSize="24" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding CategoryName}" FontSize="24" FontWeight="SemiBold" />
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
