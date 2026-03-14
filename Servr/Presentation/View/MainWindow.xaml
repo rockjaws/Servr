@@ -19,7 +19,6 @@
             <ColumnDefinition Width="450"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="1">
             <ItemsControl ItemsSource="{Binding CategoryOptions}">
                  <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -29,11 +28,10 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border>
-                            <TextBlock Text="{Binding CategoryName}" FontSize="24" FontWeight="SemiBold" />
+                           <Button Content="{Binding}"/> 
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        </TextBlock>
         </Grid>
 </Window>
