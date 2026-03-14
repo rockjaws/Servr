@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Servr.Domain.Interface
+﻿namespace Servr.Domain.Interface
 {
-  public enum LogLevel { INFO, WARNING, ERROR }
-  public interface ILogger
-  {
-    void Log(LogLevel level, string message);
-  }
+    public enum LogLevel
+    {
+        INFO,
+        WARNING,
+        ERROR,
+    }
+
+    public interface ILogger
+    {
+        void Log(LogLevel level, string message);
+    }
 }
