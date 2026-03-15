@@ -1,6 +1,8 @@
-﻿namespace Servr.Domain.Model
+﻿using Servr.Domain.Interface;
+
+namespace Servr.Domain.Model
 {
-    public class MenuItem
+    public class MenuItem : IMenuItem
     {
         public string Name { get; private set; }
         public decimal Price { get; private set; }
