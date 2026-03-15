@@ -10,6 +10,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Servr.Domain.Interface;
 using Servr.Infrastructure.Logger;
+using Servr.Presentation.ViewModel;
 
 namespace Servr
 {

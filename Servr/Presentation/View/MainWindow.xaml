@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModel="clr-namespace:Servr.Presentation.ViewModel"
+        xmlns:model="clr-namespace:Servr.Domain.Model"
         xmlns:local="clr-namespace:Servr"
         mc:Ignorable="d"
         Title="Servr" Height="768" Width="1024">
@@ -19,19 +20,43 @@
             <ColumnDefinition Width="450"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-            <ItemsControl ItemsSource="{Binding CategoryOptions}">
-                 <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel Orientation="Horizontal"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border>
-                           <Button Content="{Binding}"/> 
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>
+
+        <!-- Category buttons -->
+        <ItemsControl Grid.Row="0" Grid.Column="1" ItemsSource="{Binding CategoryOptions}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="4">
+                        <Button Content="{Binding}"
+                                Command="{Binding DataContext.SelectCategoryCommand,
+                                    RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"/>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Items list -->
+        <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding CurrentItems}" SelectedItem="{Binding SelectedItem}">
+            <ListView.Resources>
+                <DataTemplate DataType="{x:Type model:MenuItem}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding Price, StringFormat={}{0:N2} kr}"/>
+                    </StackPanel>
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type model:Drink}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding Price, StringFormat={}{0:N2} kr}" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding Volume, StringFormat={}{0} cl}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.Resources>
+        </ListView>
+    </Grid>
 </Window>
