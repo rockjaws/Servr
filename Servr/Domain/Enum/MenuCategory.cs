@@ -2,10 +2,10 @@
 
 public enum MenuCategory
 {
-    Starters,
-    MainCourses,
-    Sides,
-    Desserts,
-    SoftDrinks,
-    AlcoholicDrinks,
+  Starters,
+  MainCourses,
+  Sides,
+  Desserts,
+  SoftDrinks,
+  AlcoholicDrinks,
 }
