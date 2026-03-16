@@ -11,7 +11,7 @@ namespace Servr.Presentation.ViewModel
 {
     public class MainViewModel : ObservableObject
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
         private readonly Dictionary<MenuCategory, IEnumerable> _menuItems;
 
         private object _selectedItem;
@@ -52,7 +52,7 @@ namespace Servr.Presentation.ViewModel
         public MainViewModel()
         {
             // Keep logger, as it wont work with passing. DataContext is iffy.
-            // Likely caused by it exspecting empty ctor.
+            // Likely caused by it expecting empty ctor.
             _logger = new DebugLogger();
             CategoryOptions = new ObservableCollection<MenuCategory>(Data.GetCategories());
 

@@ -1,4 +1,6 @@
-﻿namespace Servr.Domain.Interface;
+﻿using Servr.Domain.Enum;
+
+namespace Servr.Domain.Interface;
 
 public interface IOrder
 {
@@ -6,4 +8,5 @@ public interface IOrder
     int Table { get; }
     List<IDrink> Drinks { get; }
     List<IMenuItem> Food { get; }
+    void UpdateOrderStatus(OrderStatus status);
 }
