@@ -28,7 +28,7 @@
                 <StackPanel>
                     <TextBlock Text="Order" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
                     <ScrollViewer MaxHeight="500" VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding Receipt}">
+                        <ItemsControl ItemsSource="{Binding OrderView}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="WhiteSmoke" Padding="15" Margin="0,0,5,5">
@@ -56,7 +56,7 @@
             <!-- Top Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
             <Button Content="Cancel Order" Command="{Binding CancelOrderCommand}" Background="Gray"/>
-            <Button Content="Send Order" Background="LightBlue" Margin="8,0,0,0"/>
+            <Button Content="Send Order" Command="{Binding SendOrderCommand}" Background="LightBlue" Margin="8,0,0,0"/>
         </StackPanel>
                 <!-- Summary -->
         <Grid>
@@ -79,7 +79,8 @@
         </Grid>
                     <!-- Bottom Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
-            <Button Content="Discount" Background="Gray"/>
+            <Button Content="Table" Background="Gray" Margin="8,0,0,0"/>
+            <Button Content="Discount" Background="Gray" Margin="8,0,0,0"/>
             <Button Content="Pay" Background="LightBlue" Margin="8,0,0,0"/>
         </StackPanel>
     </StackPanel>
