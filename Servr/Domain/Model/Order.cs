@@ -8,21 +8,14 @@ public class Order : IOrder
     public int OrderId { get; }
     public int Table { get; }
     public OrderStatus Status { get; private set; }
-    public DiscountType Discount { get; }
     public List<IDrink> Drinks { get; }
     public List<IMenuItem> Food { get; }
 
-    public Order(
-        int orderId,
-        int table,
-        IEnumerable<IItem> items,
-        DiscountType discount = DiscountType.None
-    )
+    public Order(int orderId, int table, IEnumerable<IItem> items)
     {
         OrderId = orderId;
         Status = OrderStatus.Received;
         Table = table;
-        Discount = discount;
         Drinks = items.OfType<IDrink>().ToList();
         Food = items.OfType<IMenuItem>().ToList();
     }
