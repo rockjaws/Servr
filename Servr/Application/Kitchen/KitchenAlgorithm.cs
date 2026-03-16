@@ -57,8 +57,17 @@ public sealed class KitchenAlgorithm : ObservableObject
         if (orderTime == null)
             return;
 
+        _logger.Log(
+            LogLevel.INFO,
+            $"Order: {order.OrderId} order time upon processing {orderTime.Value}"
+        );
+
         _orderTime.Add(order, orderTime.Value);
         Queue.Enqueue(order);
+        _logger.Log(
+            LogLevel.INFO,
+            $"Order: {order.OrderId} is now in queue, waiting for processing.."
+        );
     }
 
     private async Task ProcessOrder()
@@ -72,6 +81,7 @@ public sealed class KitchenAlgorithm : ObservableObject
         order.UpdateOrderStatus(OrderStatus.Preparing);
         await Task.Delay(orderTime);
         order.UpdateOrderStatus(OrderStatus.Ready);
+        _logger.Log(LogLevel.INFO, $"Order: {order.OrderId} Ready for table {order.Table}");
     }
 
     private TimeSpan? GetOrderTime(IOrder order)
