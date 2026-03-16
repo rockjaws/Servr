@@ -45,6 +45,10 @@ namespace Servr.Presentation.ViewModel
 
     public ObservableCollection<MenuCategory> CategoryOptions { get; }
     public ICommand SelectCategoryCommand { get; }
+    public ICommand SendOrderCommand { get; }
+    public ICommand CancelOrderCommand { get; }
+    public ICommand DiscountCommand { get; }
+    public ICommand PayCommand { get; }
 
     public MainViewModel()
     {
@@ -70,6 +74,30 @@ namespace Servr.Presentation.ViewModel
         if (param is MenuCategory category)
           CurrentItems = _menuItems[category];
       });
+
+      // SendOrderCommand = new RelayCommand(_ => orderService(order)),
+      //                                     _ => CanSendOrder());
+      CancelOrderCommand = new RelayCommand(_ => CancelOrder(),
+                                            _ => CanCancelOrder());
+      // PayCommand = new RelayCommand(_ => )
+      // DiscountCommand = new RelayCommand(_ => );
     }
+    private void CancelOrder()
+    {
+      _logger.Log(LogLevel.INFO, "Cancel order pressed");
+      Receipt.Clear();
+      if (Receipt.Count == 0)
+      {
+        _logger.Log(LogLevel.INFO, "Order cancelled successfully");
+      }
+      else
+      {
+        _logger.Log(LogLevel.WARNING, "Order not cleared");
+      }
+    }
+
+    private bool CanCancelOrder() => Receipt.Any();
+
+    private bool CanSendOrder() => Receipt.Any();
   }
 }
