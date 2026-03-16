@@ -1,0 +1,16 @@
+<Window x:Class="Servr.Presentation.View.SetTableDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Set Table" Height="150" Width="260"
+        ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+    <StackPanel Margin="16">
+        <TextBlock Text="Table number:" Margin="0,0,0,6"/>
+        <TextBox x:Name="TableNumberInput" PreviewTextInput="OnPreviewTextInput"
+                 MaxLength="3" Padding="4" Margin="0,0,0,12"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Width="70" Click="OnCancel" Margin="0,0,8,0"/>
+            <Button Content="OK" Width="70" Click="OnOk" IsDefault="True"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
