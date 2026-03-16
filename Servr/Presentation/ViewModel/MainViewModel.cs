@@ -19,13 +19,20 @@ namespace Servr.Presentation.ViewModel
 
         private int _tableNumber;
         private int _nextOrderId;
+        private DiscountType _discountType;
+
+        public DiscountType DiscountType
+        {
+            get => _discountType;
+            private set => SetProperty(ref _discountType, value);
+        }
 
         public int TableNumber
         {
             get => _tableNumber;
             private set => SetProperty(ref _tableNumber, value);
         }
-        private object _selectedItem;
+        private object? _selectedItem;
         private IEnumerable<IItem> _currentItems;
 
         public ObservableCollection<IItem> OrderView { get; } = new();
@@ -37,7 +44,7 @@ namespace Servr.Presentation.ViewModel
             set => SetProperty(ref _currentItems, value);
         }
 
-        public object SelectedItem
+        public object? SelectedItem
         {
             get => _selectedItem;
             set
@@ -84,6 +91,17 @@ namespace Servr.Presentation.ViewModel
             SendOrderCommand = new RelayCommand(_ => SendOrder(), _ => OrderView.Any());
             CancelOrderCommand = new RelayCommand(_ => CancelOrder(), _ => OrderView.Any());
             SetTableCommand = new RelayCommand(_ => SetTable());
+            DiscountCommand = new RelayCommand(_ => SetDiscount());
+        }
+
+        private void SetDiscount()
+        {
+            var dialog = new SetDiscountDialog(_discountType);
+            if (dialog.ShowDialog() == true)
+            {
+                DiscountType = dialog.SelectedDiscount;
+                _logger.Log(LogLevel.INFO, $"Discount set to {_discountType}.");
+            }
         }
 
         private void SetTable()
@@ -109,9 +127,11 @@ namespace Servr.Presentation.ViewModel
 
         private void SendOrder()
         {
-            _orderService.NewOrder(new Order(_nextOrderId++, _tableNumber, OrderView));
+            _orderService.NewOrder(new Order(_nextOrderId++, _tableNumber, OrderView, _discountType));
             _logger.Log(LogLevel.INFO, $"Order {_nextOrderId - 1} sent for table {_tableNumber}.");
             OrderView.Clear();
+            DiscountType = DiscountType.None;
+            TableNumber = 0;
         }
 
         private void CancelOrder()
