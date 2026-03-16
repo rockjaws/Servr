@@ -19,4 +19,9 @@ public class Order : IOrder
         Drinks = drinks;
         Food = food;
     }
+
+    public void UpdateOrderStatus(OrderStatus status)
+    {
+        Status = status;
+    }
 }
