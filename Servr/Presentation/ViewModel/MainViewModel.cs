@@ -127,7 +127,7 @@ namespace Servr.Presentation.ViewModel
 
         private void SendOrder()
         {
-            _orderService.NewOrder(new Order(_nextOrderId++, _tableNumber, OrderView, _discountType));
+            _orderService.NewOrder(new Order(_nextOrderId++, _tableNumber, OrderView));
             _logger.Log(LogLevel.INFO, $"Order {_nextOrderId - 1} sent for table {_tableNumber}.");
             OrderView.Clear();
             DiscountType = DiscountType.None;
