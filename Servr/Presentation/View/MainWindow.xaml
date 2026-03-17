@@ -1,4 +1,4 @@
-﻿<Window x:Class="Servr.MainWindow"
+<Window x:Class="Servr.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -67,12 +67,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding CurrentTableBill.Subtotal, StringFormat='Subtotal: {0:C}', TargetNullValue='Subtotal: 0', FallbackValue='Subtotal: 0'}"/>
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="Discount: 0"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Tax: 0"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CurrentTableBill.BillTotal, StringFormat='Total: {0:C}', TargetNullValue='Subtotal: 0', FallbackValue='Subtotal: 0'}"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="Balance Due: 0"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" Text="Tips: 0"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding CurrentTableBill.Subtotal, StringFormat='Subtotal: {0} kr.', TargetNullValue='Subtotal: 0', FallbackValue='Subtotal: 0'}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Discount: 0"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding CurrentTableBill.BillTotal, StringFormat='Total: {0} kr.', TargetNullValue='Total: 0', FallbackValue='Total: 0'}"/>
         </Grid>
                     <!-- Bottom Buttons -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">

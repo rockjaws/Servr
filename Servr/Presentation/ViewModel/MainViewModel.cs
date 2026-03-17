@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-
 using Servr.Application.Order;
 using Servr.Domain.Enum;
 using Servr.Domain.Interface;
@@ -14,6 +13,7 @@ namespace Servr.Presentation.ViewModel
     {
         private readonly ILogger _logger;
         private readonly OrderService _orderService;
+
         // bill service
         private readonly Dictionary<MenuCategory, ObservableCollection<IItem>> _menuItems;
         private readonly Dictionary<int, IBill> _bills = new(); // Bill Service
@@ -76,6 +76,7 @@ namespace Servr.Presentation.ViewModel
                 string typeLabel = item is IDrink ? "IDrink" : "IMenuItem";
                 _logger.Log(LogLevel.INFO, $"[{typeLabel}] {item.Name} added to order.");
                 AddItemToOrder(item);
+                SelectedItem = null;
             }
         }
 
@@ -125,12 +126,18 @@ namespace Servr.Presentation.ViewModel
 
         private void OpenBillingWindow()
         {
-            var items = _bills.Values
-                .SelectMany(b => b.Orders)
+            var items = _bills
+                .Values.SelectMany(b => b.Orders)
                 .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
                 .ToList();
 
+            var tableAtTimeOfPay = _tableNumber;
             var vm = new BillingViewModel(items);
+            vm.PaymentCompleted += _ =>
+            {
+                _bills.Remove(tableAtTimeOfPay);
+                OnPropertyChanged(nameof(CurrentTableBill));
+            };
             OpenBillingRequested?.Invoke(vm);
         }
 
