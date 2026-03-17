@@ -44,6 +44,14 @@ namespace Servr
                     var dialog = new SetDiscountDialog(current) { Owner = this };
                     return dialog.ShowDialog() == true ? dialog.SelectedDiscount : null;
                 };
+
+                vm.AddExtraRequested += item =>
+                {
+                    var dialog = new ExtrasDialog(item) { Owner = this };
+                    if (dialog.ShowDialog() == true && dialog.SelectedExtra != null)
+                        return (dialog.SelectedExtra.Name, dialog.SelectedExtra.Price, dialog.IsAdd);
+                    return null;
+                };
             }
         }
     }
