@@ -1,5 +1,6 @@
 using Servr.Domain.Enum;
 using Servr.Domain.Interface;
+using Servr.Domain.Strategies;
 
 namespace Servr.Domain.Model;
 
@@ -11,7 +12,15 @@ public class Bill : IBill
         .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks))
         .Sum(i => i.Price);
     public decimal BillTotal => Subtotal - DiscountAmount;
-    public decimal DiscountAmount { get; private set; }
+    public decimal DiscountAmount
+    {
+        get
+        {
+            var strategy = DiscountStrategyFactory.Get(DiscountType);
+            if (strategy == null) return 0m;
+            return Subtotal - strategy.Apply(Subtotal);
+        }
+    }
     public string Server { get; }
     public List<IOrder> Orders { get; }
     public int Table => Orders.First().Table;
