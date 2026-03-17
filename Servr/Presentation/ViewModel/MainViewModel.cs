@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
+using Servr.Application.Billing;
 using Servr.Application.Order;
 using Servr.Domain.Enum;
 using Servr.Domain.Interface;
@@ -14,9 +15,8 @@ namespace Servr.Presentation.ViewModel
     {
         private readonly ILogger _logger;
         private readonly OrderService _orderService;
-        // bill service
+        private readonly BillingService _billingService;
         private readonly Dictionary<MenuCategory, ObservableCollection<IItem>> _menuItems;
-        private readonly Dictionary<int, IBill> _bills = new(); // Bill Service
 
         private int _tableNumber;
         private int _nextOrderId;
@@ -27,18 +27,7 @@ namespace Servr.Presentation.ViewModel
         public ObservableCollection<IItem> OrderView { get; } = new();
         public ObservableCollection<MenuCategory> CategoryOptions { get; }
 
-        public IBill CurrentTableBill
-        {
-            get
-            {
-                if (_bills.TryGetValue(_tableNumber, out var bill))
-                {
-                    _logger.Log(LogLevel.INFO, $"Subtotal: {bill.Subtotal}");
-                    return bill;
-                }
-                return null;
-            }
-        }
+        public IBill CurrentTableBill => _billingService.GetBillForTable(_tableNumber);
 
         public DiscountType DiscountType
         {
@@ -72,9 +61,6 @@ namespace Servr.Presentation.ViewModel
             {
                 if (!SetProperty(ref _selectedItem, value) || value is not IItem item)
                     return;
-
-                string typeLabel = item is IDrink ? "IDrink" : "IMenuItem";
-                _logger.Log(LogLevel.INFO, $"[{typeLabel}] {item.Name} added to order.");
                 AddItemToOrder(item);
             }
         }
@@ -92,10 +78,11 @@ namespace Servr.Presentation.ViewModel
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
 
-        public MainViewModel(ILogger logger, OrderService orderService)
+        public MainViewModel(ILogger logger, OrderService orderService, BillingService billingService)
         {
             _logger = logger;
             _orderService = orderService;
+            _billingService = billingService;
             CategoryOptions = new ObservableCollection<MenuCategory>(Data.GetCategories());
 
             _menuItems = new Dictionary<MenuCategory, ObservableCollection<IItem>>
@@ -120,12 +107,12 @@ namespace Servr.Presentation.ViewModel
             CancelOrderCommand = new RelayCommand(_ => CancelOrder(), _ => OrderView.Any());
             SetTableCommand = new RelayCommand(_ => SetTable());
             DiscountCommand = new RelayCommand(_ => SetDiscount());
-            PayCommand = new RelayCommand(_ => OpenBillingWindow(), _ => _bills.Any());
+            PayCommand = new RelayCommand(_ => OpenBillingWindow(), _ => billingService.Bills.Any());
         }
 
         private void OpenBillingWindow()
         {
-            var items = _bills.Values
+            var items = _billingService.Bills.Values
                 .SelectMany(b => b.Orders)
                 .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
                 .ToList();
@@ -163,11 +150,7 @@ namespace Servr.Presentation.ViewModel
         {
             var order = new Order(_nextOrderId++, _tableNumber, OrderView);
             _orderService.NewOrder(order);
-
-            if (_bills.TryGetValue(_tableNumber, out var bill))
-                bill.Orders.Add(order);
-            else
-                _bills[_tableNumber] = new Bill(1, DiscountType, "Bo", new List<IOrder> { order });
+            _billingService.AddOrderToTable(_tableNumber, DiscountType, order);
 
             _logger.Log(LogLevel.INFO, $"Order {_nextOrderId - 1} sent for table {_tableNumber}.");
             OrderView.Clear();
