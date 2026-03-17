@@ -22,9 +22,11 @@ namespace Servr
             ILogger logger = new DebugLogger();
             logger.Log(LogLevel.INFO, "Application starting");
 
+            logger.Log(LogLevel.INFO, "Setting up services");
             OrderService orderService = new OrderService(logger);
             BillingService billingService = new BillingService(logger);
-            var viewModel = new MainViewModel(logger, orderService, billingService); // add bill service
+
+            var viewModel = new MainViewModel(logger, orderService, billingService);
             MainWindow mainWindow = new MainWindow(viewModel);
             mainWindow.Show();
         }
