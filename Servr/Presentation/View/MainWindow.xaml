@@ -68,7 +68,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding CurrentTableBill.Subtotal, StringFormat='Subtotal: {0} kr.', TargetNullValue='Subtotal: 0', FallbackValue='Subtotal: 0'}"/>
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="Discount: 0"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding CurrentTableBill.DiscountAmount, StringFormat='Discount: {0} kr.', TargetNullValue='Discount: 0', FallbackValue='Discount: 0'}"/>
             <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding CurrentTableBill.BillTotal, StringFormat='Total: {0} kr.', TargetNullValue='Total: 0', FallbackValue='Total: 0'}"/>
         </Grid>
                     <!-- Bottom Buttons -->
