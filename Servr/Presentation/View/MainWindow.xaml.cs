@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 
 using Servr.Domain.Interface;
 using Servr.Infrastructure.Logger;
+using Servr.Presentation.View;
 using Servr.Presentation.ViewModel;
 
 namespace Servr
@@ -24,6 +25,28 @@ namespace Servr
         {
             InitializeComponent();
             DataContext = viewModel;
+            _logger = logger;
+            _logger.Log(LogLevel.INFO, "Application starting");
+
+            if (DataContext is MainViewModel vm)
+            {
+                vm.OpenBillingRequested += billingVm =>
+                {
+                    new BillingWindow(billingVm) { Owner = this }.Show();
+                };
+
+                vm.SetTableRequested += current =>
+                {
+                    var dialog = new SetTableDialog(current) { Owner = this };
+                    return dialog.ShowDialog() == true ? dialog.TableNumber : null;
+                };
+
+                vm.SetDiscountRequested += current =>
+                {
+                    var dialog = new SetDiscountDialog(current) { Owner = this };
+                    return dialog.ShowDialog() == true ? dialog.SelectedDiscount : null;
+                };
+            }
         }
     }
 }

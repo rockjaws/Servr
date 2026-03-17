@@ -7,7 +7,6 @@ using Servr.Domain.Interface;
 using Servr.Domain.Model;
 using Servr.Infrastructure.Data;
 using Servr.Presentation.Command;
-using Servr.Presentation.View;
 
 namespace Servr.Presentation.ViewModel
 {
@@ -52,7 +51,8 @@ namespace Servr.Presentation.ViewModel
             get => _tableNumber;
             private set
             {
-                if (!SetProperty(ref _tableNumber, value)) return;
+                if (!SetProperty(ref _tableNumber, value))
+                    return;
                 OrderView.Clear();
                 _logger.Log(LogLevel.INFO, $"Table set to {_tableNumber}.");
                 OnPropertyChanged(nameof(CurrentTableBill));
@@ -72,9 +72,17 @@ namespace Servr.Presentation.ViewModel
             {
                 if (!SetProperty(ref _selectedItem, value) || value is not IItem item)
                     return;
+
+                string typeLabel = item is IDrink ? "IDrink" : "IMenuItem";
+                _logger.Log(LogLevel.INFO, $"[{typeLabel}] {item.Name} added to order.");
                 AddItemToOrder(item);
             }
         }
+
+        // Events for View interactions
+        public event Action<BillingViewModel>? OpenBillingRequested;
+        public event Func<int, int?>? SetTableRequested;
+        public event Func<DiscountType, DiscountType?>? SetDiscountRequested;
 
         // Commands
         public ICommand SelectCategoryCommand { get; }
@@ -84,11 +92,8 @@ namespace Servr.Presentation.ViewModel
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
 
-        public MainViewModel(ILogger logger, OrderService orderService) // add bill service
+        public MainViewModel()
         {
-            _logger = logger;
-            _orderService = orderService;
-            // add bill service
             CategoryOptions = new ObservableCollection<MenuCategory>(Data.GetCategories());
 
             _menuItems = new Dictionary<MenuCategory, ObservableCollection<IItem>>
@@ -113,24 +118,36 @@ namespace Servr.Presentation.ViewModel
             CancelOrderCommand = new RelayCommand(_ => CancelOrder(), _ => OrderView.Any());
             SetTableCommand = new RelayCommand(_ => SetTable());
             DiscountCommand = new RelayCommand(_ => SetDiscount());
+            PayCommand = new RelayCommand(_ => OpenBillingWindow(), _ => _bills.Any());
+        }
+
+        private void OpenBillingWindow()
+        {
+            var items = _bills.Values
+                .SelectMany(b => b.Orders)
+                .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
+                .ToList();
+
+            var vm = new BillingViewModel(items);
+            OpenBillingRequested?.Invoke(vm);
         }
 
         private void SetDiscount()
         {
-            var dialog = new SetDiscountDialog(_discountType);
-            if (dialog.ShowDialog() == true)
+            var result = SetDiscountRequested?.Invoke(_discountType);
+            if (result.HasValue)
             {
-                DiscountType = dialog.SelectedDiscount;
+                DiscountType = result.Value;
                 _logger.Log(LogLevel.INFO, $"Discount set to {_discountType}.");
             }
         }
 
         private void SetTable()
         {
-            var dialog = new SetTableDialog(_tableNumber);
-            if (dialog.ShowDialog() == true)
+            var result = SetTableRequested?.Invoke(_tableNumber);
+            if (result.HasValue)
             {
-                TableNumber = dialog.TableNumber;
+                TableNumber = result.Value;
             }
         }
 
