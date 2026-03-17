@@ -62,6 +62,7 @@ namespace Servr.Presentation.ViewModel
                 if (!SetProperty(ref _selectedItem, value) || value is not IItem item)
                     return;
                 AddItemToOrder(item);
+                SelectedItem = null;
             }
         }
 
@@ -117,7 +118,13 @@ namespace Servr.Presentation.ViewModel
                 .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
                 .ToList();
 
+            var tableAtTimeOfPay = _tableNumber;
             var vm = new BillingViewModel(items);
+            vm.PaymentCompleted += _ =>
+            {
+                _bills.Remove(tableAtTimeOfPay);
+                OnPropertyChanged(nameof(CurrentTableBill));
+            };
             OpenBillingRequested?.Invoke(vm);
         }
 
