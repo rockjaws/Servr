@@ -14,18 +14,15 @@ using Servr.Presentation.ViewModel;
 
 namespace Servr
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+  /// <summary>
+  /// Interaction logic for MainWindow.xaml
+  /// </summary>
+  public partial class MainWindow : Window
+  {
+    public MainWindow(MainViewModel viewModel)
     {
-        private readonly ILogger _logger;
-
-        public MainWindow(ILogger logger)
-        {
-            InitializeComponent();
-            _logger = logger;
-            _logger.Log(LogLevel.INFO, "Application starting");
-        }
+      InitializeComponent();
+      DataContext = viewModel;
     }
+  }
 }

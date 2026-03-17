@@ -5,15 +5,15 @@ namespace Servr.Application.Order;
 
 public class OrderService
 {
-    private KitchenAlgorithm _kitchenAlgorithm;
+  private KitchenAlgorithm _kitchenAlgorithm;
 
-    public OrderService()
-    {
-        _kitchenAlgorithm = new KitchenAlgorithm();
-    }
+  public OrderService(ILogger logger)
+  {
+    _kitchenAlgorithm = new KitchenAlgorithm(logger);
+  }
 
-    public void NewOrder(IOrder order)
-    {
-        _kitchenAlgorithm.NewOrder(order);
-    }
+  public void NewOrder(IOrder order)
+  {
+    _kitchenAlgorithm.NewOrder(order);
+  }
 }

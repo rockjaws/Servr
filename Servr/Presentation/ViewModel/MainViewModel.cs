@@ -5,7 +5,6 @@ using Servr.Domain.Enum;
 using Servr.Domain.Interface;
 using Servr.Domain.Model;
 using Servr.Infrastructure.Data;
-using Servr.Infrastructure.Logger;
 using Servr.Presentation.Command;
 using Servr.Presentation.View;
 
@@ -13,8 +12,9 @@ namespace Servr.Presentation.ViewModel
 {
   public class MainViewModel : ObservableObject
   {
-    private readonly ILogger _logger = new DebugLogger();
-    private readonly OrderService _orderService = new();
+    private readonly ILogger _logger;
+    private readonly OrderService _orderService;
+    // bill service
     private readonly Dictionary<MenuCategory, ObservableCollection<IItem>> _menuItems;
     private readonly Dictionary<int, IBill> _bills = new();
 
@@ -71,9 +71,6 @@ namespace Servr.Presentation.ViewModel
       {
         if (!SetProperty(ref _selectedItem, value) || value is not IItem item)
           return;
-
-        string typeLabel = item is IDrink ? "IDrink" : "IMenuItem";
-        _logger.Log(LogLevel.INFO, $"[{typeLabel}] {item.Name} added to order.");
         AddItemToOrder(item);
       }
     }
@@ -86,8 +83,11 @@ namespace Servr.Presentation.ViewModel
     public ICommand DiscountCommand { get; }
     public ICommand PayCommand { get; }
 
-    public MainViewModel()
+    public MainViewModel(ILogger logger, OrderService orderService) // add bill service
     {
+      _logger = logger;
+      _orderService = orderService;
+      // add bill service
       CategoryOptions = new ObservableCollection<MenuCategory>(Data.GetCategories());
 
       _menuItems = new Dictionary<MenuCategory, ObservableCollection<IItem>>
@@ -135,13 +135,8 @@ namespace Servr.Presentation.ViewModel
 
     private void AddItemToOrder(IItem item)
     {
-      int before = OrderView.Count;
       OrderView.Add(item);
-
-      if (OrderView.Count == before + 1)
-        _logger.Log(LogLevel.INFO, $"{item.Name} correctly added to order.");
-      else
-        _logger.Log(LogLevel.WARNING, $"{item.Name} was not added to order.");
+      _logger.Log(LogLevel.INFO, $"{item.Name} added to order.");
     }
 
     private void SendOrder()
