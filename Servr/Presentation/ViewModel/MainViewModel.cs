@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-
 using Servr.Application.Billing;
 using Servr.Application.Order;
 using Servr.Domain.Enum;
@@ -42,7 +41,6 @@ namespace Servr.Presentation.ViewModel
             {
                 if (!SetProperty(ref _tableNumber, value))
                     return;
-                OrderView.Clear();
                 _logger.Log(LogLevel.INFO, $"Table set to {_tableNumber}.");
                 OnPropertyChanged(nameof(CurrentTableBill));
             }
@@ -79,7 +77,11 @@ namespace Servr.Presentation.ViewModel
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
 
-        public MainViewModel(ILogger logger, OrderService orderService, BillingService billingService)
+        public MainViewModel(
+            ILogger logger,
+            OrderService orderService,
+            BillingService billingService
+        )
         {
             _logger = logger;
             _orderService = orderService;
@@ -104,25 +106,31 @@ namespace Servr.Presentation.ViewModel
                     CurrentItems = _menuItems[cat];
             });
 
-            SendOrderCommand = new RelayCommand(_ => SendOrder(), _ => OrderView.Any());
+            SendOrderCommand = new RelayCommand(
+                _ => SendOrder(),
+                _ => OrderView.Any() && _tableNumber != 0
+            );
             CancelOrderCommand = new RelayCommand(_ => CancelOrder(), _ => OrderView.Any());
             SetTableCommand = new RelayCommand(_ => SetTable());
             DiscountCommand = new RelayCommand(_ => SetDiscount());
-            PayCommand = new RelayCommand(_ => OpenBillingWindow(), _ => billingService.Bills.Any());
+            PayCommand = new RelayCommand(
+                _ => OpenBillingWindow(),
+                _ => _tableNumber != 0 && billingService.Bills.ContainsKey(_tableNumber)
+            );
         }
 
         private void OpenBillingWindow()
         {
-            var items = _billingService.Bills.Values
-                .SelectMany(b => b.Orders)
-                .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
+            var tableAtTimeOfPay = _tableNumber;
+            var bill = _billingService.GetBillForTable(tableAtTimeOfPay);
+            var items = bill
+                .Orders.SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
                 .ToList();
 
-            var tableAtTimeOfPay = _tableNumber;
             var vm = new BillingViewModel(items);
             vm.PaymentCompleted += _ =>
             {
-                _bills.Remove(tableAtTimeOfPay);
+                _billingService.ClearBill(tableAtTimeOfPay);
                 OnPropertyChanged(nameof(CurrentTableBill));
             };
             OpenBillingRequested?.Invoke(vm);
@@ -162,7 +170,6 @@ namespace Servr.Presentation.ViewModel
             _logger.Log(LogLevel.INFO, $"Order {_nextOrderId - 1} sent for table {_tableNumber}.");
             OrderView.Clear();
             DiscountType = DiscountType.None;
-            TableNumber = 0;
             OnPropertyChanged(nameof(CurrentTableBill));
         }
 
