@@ -1,21 +1,22 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
+
 using Servr.Application.Order;
 using Servr.Domain.Enum;
 using Servr.Domain.Interface;
 using Servr.Domain.Model;
 using Servr.Infrastructure.Data;
-using Servr.Infrastructure.Logger;
 using Servr.Presentation.Command;
 
 namespace Servr.Presentation.ViewModel
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly ILogger _logger = new DebugLogger();
-        private readonly OrderService _orderService = new();
+        private readonly ILogger _logger;
+        private readonly OrderService _orderService;
+        // bill service
         private readonly Dictionary<MenuCategory, ObservableCollection<IItem>> _menuItems;
-        private readonly Dictionary<int, IBill> _bills = new();
+        private readonly Dictionary<int, IBill> _bills = new(); // Bill Service
 
         private int _tableNumber;
         private int _nextOrderId;
@@ -152,13 +153,8 @@ namespace Servr.Presentation.ViewModel
 
         private void AddItemToOrder(IItem item)
         {
-            int before = OrderView.Count;
             OrderView.Add(item);
-
-            if (OrderView.Count == before + 1)
-                _logger.Log(LogLevel.INFO, $"{item.Name} correctly added to order.");
-            else
-                _logger.Log(LogLevel.WARNING, $"{item.Name} was not added to order.");
+            _logger.Log(LogLevel.INFO, $"{item.Name} added to order.");
         }
 
         private void SendOrder()

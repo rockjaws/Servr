@@ -1,8 +1,8 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 using Servr.Infrastructure.Logger;
 using Servr.Domain.Interface;
+using Servr.Application.Order;
+using Servr.Presentation.ViewModel;
 
 
 namespace Servr
@@ -16,8 +16,14 @@ namespace Servr
     {
       base.OnStartup(e);
 
+      // composition root
       ILogger logger = new DebugLogger();
-      MainWindow mainWindow = new MainWindow(logger);
+      logger.Log(LogLevel.INFO, "Application starting");
+
+      OrderService orderService = new OrderService(logger);
+      // initialize bill service
+      var viewModel = new MainViewModel(logger, orderService); // add bill service
+      MainWindow mainWindow = new MainWindow(viewModel);
       mainWindow.Show();
     }
   }
