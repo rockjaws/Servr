@@ -92,8 +92,10 @@ namespace Servr.Presentation.ViewModel
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
 
-        public MainViewModel()
+        public MainViewModel(ILogger logger, OrderService orderService)
         {
+            _logger = logger;
+            _orderService = orderService;
             CategoryOptions = new ObservableCollection<MenuCategory>(Data.GetCategories());
 
             _menuItems = new Dictionary<MenuCategory, ObservableCollection<IItem>>

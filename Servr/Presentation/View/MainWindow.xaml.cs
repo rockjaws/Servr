@@ -25,8 +25,6 @@ namespace Servr
         {
             InitializeComponent();
             DataContext = viewModel;
-            _logger = logger;
-            _logger.Log(LogLevel.INFO, "Application starting");
 
             if (DataContext is MainViewModel vm)
             {
