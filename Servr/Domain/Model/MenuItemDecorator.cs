@@ -5,6 +5,7 @@ namespace Servr.Domain.Model;
 public abstract class MenuItemDecorator : IMenuItem
 {
     protected readonly IMenuItem _menuItem;
+    public IMenuItem WrappedItem => _menuItem;
 
     protected MenuItemDecorator(IMenuItem menuItem)
     {

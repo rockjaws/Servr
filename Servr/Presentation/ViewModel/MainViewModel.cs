@@ -68,6 +68,7 @@ namespace Servr.Presentation.ViewModel
         public event Action<BillingViewModel>? OpenBillingRequested;
         public event Func<int, int?>? SetTableRequested;
         public event Func<DiscountType, DiscountType?>? SetDiscountRequested;
+        public event Func<IItem, (string Name, decimal Price, bool IsAdd)?>? AddExtraRequested;
 
         // Commands
         public ICommand SelectCategoryCommand { get; }
@@ -76,6 +77,7 @@ namespace Servr.Presentation.ViewModel
         public ICommand CancelOrderCommand { get; }
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
+        public ICommand AddExtraCommand { get; }
 
         public MainViewModel(
             ILogger logger,
@@ -116,6 +118,10 @@ namespace Servr.Presentation.ViewModel
             PayCommand = new RelayCommand(
                 _ => OpenBillingWindow(),
                 _ => _tableNumber != 0 && billingService.Bills.ContainsKey(_tableNumber)
+            );
+            AddExtraCommand = new RelayCommand(
+                param => ApplyExtra(param as IItem),
+                param => param is IItem
             );
         }
 
@@ -171,6 +177,30 @@ namespace Servr.Presentation.ViewModel
             OrderView.Clear();
             DiscountType = DiscountType.None;
             OnPropertyChanged(nameof(CurrentTableBill));
+        }
+
+        private void ApplyExtra(IItem? item)
+        {
+            if (item == null) return;
+            var result = AddExtraRequested?.Invoke(item);
+            if (result == null) return;
+
+            var (extraName, extraPrice, isAdd) = result.Value;
+            var index = OrderView.IndexOf(item);
+            if (index < 0) return;
+
+            var price = isAdd ? extraPrice : 0m;
+            var label = isAdd ? extraName : $"No {extraName}";
+
+            IItem decorated = item switch
+            {
+                IDrink drink => new DrinkExtra(drink, label, price),
+                IMenuItem menuItem => new MenuItemExtra(menuItem, label, price),
+                _ => item
+            };
+
+            OrderView[index] = decorated;
+            _logger.Log(LogLevel.INFO, $"Extra '{label}' applied to {item.Name}.");
         }
 
         private void CancelOrder()

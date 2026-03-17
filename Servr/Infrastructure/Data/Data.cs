@@ -74,4 +74,46 @@ public static class Data
             new Drink("Gin & Tonic", 75m, "With cucumber", 25),
         };
   }
+
+  public static List<(string Name, decimal Price)> GetExtrasForItem(string itemName)
+  {
+    return ItemExtras.GetValueOrDefault(itemName, []);
+  }
+
+  private static readonly Dictionary<string, List<(string Name, decimal Price)>> ItemExtras = new()
+  {
+    // Starters
+    ["Bruschetta"] = [("Olives", 5m), ("Extra Cheese", 10m), ("Basil", 0m)],
+    ["Garlic Bread"] = [("Extra Cheese", 10m), ("Olives", 5m), ("Herbs", 0m)],
+    ["Soup of the Day"] = [("Bread", 5m), ("Croutons", 5m), ("Cream", 3m)],
+
+    // Main Courses
+    ["Burger"] = [("Extra Cheese", 10m), ("Bacon", 12m), ("Extra Patty", 15m), ("Jalapeños", 5m)],
+    ["Steak"] = [("Pepper Sauce", 10m), ("Garlic Butter", 8m), ("Mushrooms", 10m)],
+    ["Pasta Carbonara"] = [("Extra Parmesan", 8m), ("Truffle Oil", 15m), ("Pancetta", 12m)],
+    ["Grilled Salmon"] = [("Extra Dill Sauce", 8m), ("Capers", 5m), ("Lemon", 3m)],
+
+    // Sides
+    ["Fries"] = [("Cheese", 10m), ("Truffle Oil", 12m), ("Garlic", 5m)],
+    ["Salad"] = [("Dressing", 5m), ("Croutons", 5m), ("Feta Cheese", 10m)],
+    ["Onion Rings"] = [("Dipping Sauce", 5m), ("Cheese", 8m)],
+
+    // Desserts
+    ["Brownie"] = [("Whipped Cream", 5m), ("Extra Scoop", 10m), ("Chocolate Sauce", 5m)],
+    ["Cheesecake"] = [("Whipped Cream", 5m), ("Berry Sauce", 8m), ("Chocolate Sauce", 5m)],
+    ["Ice Cream"] = [("Extra Scoop", 10m), ("Chocolate Sauce", 5m), ("Sprinkles", 3m)],
+
+    // Soft Drinks
+    ["Cola"] = [("Ice", 0m), ("Lemon", 3m)],
+    ["Fanta"] = [("Ice", 0m), ("Lemon", 3m)],
+    ["Juice"] = [("Ice", 0m), ("Sugar", 0m)],
+    ["Water"] = [("Ice", 0m), ("Lemon", 3m)],
+
+    // Alcoholic Drinks
+    ["Vodka"] = [("Ice", 0m), ("Lemon", 3m), ("Syrup", 5m)],
+    ["Beer"] = [("Lemon", 3m)],
+    ["White Wine"] = [("Ice", 0m)],
+    ["Red Wine"] = [],
+    ["Gin & Tonic"] = [("Ice", 0m), ("Lemon", 3m), ("Cucumber", 3m)],
+  };
 }

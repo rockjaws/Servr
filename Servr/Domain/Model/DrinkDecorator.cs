@@ -5,6 +5,7 @@ namespace Servr.Domain.Model;
 public abstract class DrinkDecorator : IDrink
 {
     protected readonly IDrink _drink;
+    public IDrink WrappedDrink => _drink;
 
     protected DrinkDecorator(IDrink drink)
     {
