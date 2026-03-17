@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+
 using Servr.Application.Billing;
 using Servr.Application.Order;
 using Servr.Domain.Enum;
@@ -123,11 +124,8 @@ namespace Servr.Presentation.ViewModel
         {
             var tableAtTimeOfPay = _tableNumber;
             var bill = _billingService.GetBillForTable(tableAtTimeOfPay);
-            var items = bill
-                .Orders.SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks.Cast<IItem>()))
-                .ToList();
 
-            var vm = new BillingViewModel(items);
+            var vm = new BillingViewModel(bill);
             vm.PaymentCompleted += _ =>
             {
                 _billingService.ClearBill(tableAtTimeOfPay);
