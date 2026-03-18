@@ -5,6 +5,7 @@ using Servr.Domain.Interface;
 using Servr.Application.Order;
 using Servr.Presentation.ViewModel;
 using Servr.Application.Billing;
+using Servr.Application.Kitchen;
 
 
 namespace Servr
@@ -24,6 +25,8 @@ namespace Servr
 
             logger.Log(LogLevel.INFO, "Setting up services");
             OrderService orderService = new OrderService(logger);
+            KitchenAlgorithm kitchen = new KitchenAlgorithm(logger);
+            orderService.Subscribe(kitchen);
             BillingService billingService = new BillingService(logger);
 
             var viewModel = new MainViewModel(logger, orderService, billingService);

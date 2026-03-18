@@ -1,11 +1,10 @@
 using Servr.Domain.Enum;
 using Servr.Domain.Interface;
-using Servr.Infrastructure.Logger;
 using Servr.Presentation.ViewModel;
 
 namespace Servr.Application.Kitchen;
 
-public sealed class KitchenAlgorithm : ObservableObject
+public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
 {
     private readonly ILogger _logger;
     private int _recievedOrders;
@@ -45,7 +44,7 @@ public sealed class KitchenAlgorithm : ObservableObject
         _orderTime = new Dictionary<IOrder, TimeSpan>();
     }
 
-    public void NewOrder(IOrder order)
+    public void Update(IOrder order)
     {
         if (order == null || order.Food.Count <= 0)
             return;
@@ -68,6 +67,8 @@ public sealed class KitchenAlgorithm : ObservableObject
             LogLevel.INFO,
             $"Order: {order.OrderId} is now in queue, waiting for processing.."
         );
+
+        _ = ProcessOrder();
     }
 
     private async Task ProcessOrder()
