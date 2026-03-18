@@ -150,5 +150,19 @@
     </ItemsControl>
 </ScrollViewer>
 </Grid>
-</Grid>
+
+        <!-- Toast Notification -->
+        <Border x:Name="ToastNotification"
+                Grid.ColumnSpan="2"
+                Background="#2C3E50" CornerRadius="6"
+                Padding="16,10" Margin="0,12,12,0"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                Panel.ZIndex="100"
+                Visibility="Collapsed"
+                Opacity="0.95"
+                MouseLeftButtonDown="ToastNotification_MouseLeftButtonDown"
+                Cursor="Hand">
+            <TextBlock x:Name="ToastText" Foreground="White" FontSize="14" FontWeight="SemiBold"/>
+        </Border>
+    </Grid>
 </Window>
