@@ -70,6 +70,7 @@ namespace Servr.Presentation.ViewModel
         public event Func<int, int?>? SetTableRequested;
         public event Func<DiscountType, DiscountType?>? SetDiscountRequested;
         public event Func<IItem, (string Name, decimal Price, bool IsAdd)?>? AddExtraRequested;
+        public event Action<string>? ShowNotificationRequested;
 
         // Commands
         public ICommand SelectCategoryCommand { get; }
@@ -208,6 +209,11 @@ namespace Servr.Presentation.ViewModel
 
             OrderView[index] = decorated;
             _logger.Log(LogLevel.INFO, $"Extra '{label}' applied to {item.Name}.");
+        }
+
+        public void NotifyOrderReady(IOrder order)
+        {
+            ShowNotificationRequested?.Invoke($"Order #{order.OrderId} is ready for table {order.Table}!");
         }
 
         private void CancelOrder()

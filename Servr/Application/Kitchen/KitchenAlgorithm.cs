@@ -37,6 +37,8 @@ public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
         set => SetProperty(ref _ordersReady, value);
     }
 
+    public event Action<IOrder>? OrderReady;
+
     public KitchenAlgorithm(ILogger logger)
     {
         _logger = logger;
@@ -87,7 +89,9 @@ public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
         order.UpdateOrderStatus(OrderStatus.Preparing);
         await Task.Delay(orderTime);
         order.UpdateOrderStatus(OrderStatus.Ready);
+        OrdersReady += 1;
         _logger.Log(LogLevel.INFO, $"Order: {order.OrderId} Ready for table {order.Table}");
+        OrderReady?.Invoke(order);
     }
 
     private TimeSpan? GetOrderTime(IOrder order)
