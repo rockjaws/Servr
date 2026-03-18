@@ -4,6 +4,6 @@ namespace Servr.Domain.Interface;
 
 public interface IDiscountable
 {
-    DiscountType DiscountType { get; }
+    DiscountType DiscountType { get; set; }
     decimal DiscountAmount { get; }
 }

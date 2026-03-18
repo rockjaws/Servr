@@ -21,13 +21,12 @@ namespace Servr.Presentation.ViewModel
         private int _tableNumber;
         private int _nextOrderId;
         private DiscountType _discountType;
-        private object? _selectedItem;
         private IEnumerable<IItem> _currentItems;
 
         public ObservableCollection<IItem> OrderView { get; } = new();
         public ObservableCollection<MenuCategory> CategoryOptions { get; }
 
-        public IBill CurrentTableBill => _billingService.GetBillForTable(_tableNumber);
+        public IBill? CurrentTableBill => _billingService.GetBillForTable(_tableNumber);
 
         public DiscountType DiscountType
         {
@@ -53,18 +52,6 @@ namespace Servr.Presentation.ViewModel
             set => SetProperty(ref _currentItems, value);
         }
 
-        public object? SelectedItem
-        {
-            get => _selectedItem;
-            set
-            {
-                if (!SetProperty(ref _selectedItem, value) || value is not IItem item)
-                    return;
-                AddItemToOrder(item);
-                SelectedItem = null;
-            }
-        }
-
         // Events for View interactions
         public event Action<BillingViewModel>? OpenBillingRequested;
         public event Func<int, int?>? SetTableRequested;
@@ -79,6 +66,7 @@ namespace Servr.Presentation.ViewModel
         public ICommand CancelOrderCommand { get; }
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
+        public ICommand AddItemCommand { get; }
         public ICommand AddExtraCommand { get; }
 
         public MainViewModel(
@@ -121,6 +109,10 @@ namespace Servr.Presentation.ViewModel
                 _ => OpenBillingWindow(),
                 _ => _tableNumber != 0 && billingService.Bills.ContainsKey(_tableNumber)
             );
+            AddItemCommand = new RelayCommand(
+                param => { if (param is IItem item) AddItemToOrder(item); },
+                param => param is IItem
+            );
             AddExtraCommand = new RelayCommand(
                 param => ApplyExtra(param as IItem),
                 param => param is IItem
@@ -131,6 +123,7 @@ namespace Servr.Presentation.ViewModel
         {
             var tableAtTimeOfPay = _tableNumber;
             var bill = _billingService.GetBillForTable(tableAtTimeOfPay);
+            if (bill == null) return;
 
             var vm = new BillingViewModel(bill);
             vm.PaymentCompleted += _ =>
