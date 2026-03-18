@@ -1,4 +1,4 @@
-﻿using Servr.Domain.Enum;
+using Servr.Domain.Enum;
 
 namespace Servr.Domain.Interface;
 
