@@ -10,7 +10,7 @@ namespace Servr.Infrastructure.Logger
 
         public Logger(string logFilePath = "app.log")
         {
-            using StreamWriter writer = new StreamWriter(_logFilePath, append: false); // Overwrite/reset the file on startup
+            using StreamWriter writer = new StreamWriter(logFilePath, append: false); // Overwrite/reset the file on startup
             _logFilePath = logFilePath;
         }
 

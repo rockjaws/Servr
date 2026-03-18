@@ -30,6 +30,7 @@ namespace Servr
             BillingService billingService = new BillingService(logger);
 
             var viewModel = new MainViewModel(logger, orderService, billingService);
+            kitchen.OrderReady += order => viewModel.NotifyOrderReady(order);
             MainWindow mainWindow = new MainWindow(viewModel);
             mainWindow.Show();
         }
