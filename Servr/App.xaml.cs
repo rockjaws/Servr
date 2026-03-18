@@ -19,7 +19,7 @@ namespace Servr
             base.OnStartup(e);
 
             // composition root
-            ILogger logger = new DebugLogger();
+            ILogger logger = new Logger();
             logger.Log(LogLevel.INFO, "Application starting");
 
             logger.Log(LogLevel.INFO, "Setting up services");
