@@ -7,7 +7,7 @@ namespace Servr.Domain.Model;
 public class Bill : IBill
 {
     public int BillId { get; }
-    public DiscountType DiscountType { get; }
+    public DiscountType DiscountType { get; set; }
     public decimal Subtotal => Orders
         .SelectMany(o => o.Food.Cast<IItem>().Concat(o.Drinks))
         .Sum(i => i.Price);
@@ -23,7 +23,7 @@ public class Bill : IBill
     }
     public string Server { get; }
     public List<IOrder> Orders { get; }
-    public int Table => Orders.First().Table;
+    public int Table => Orders.FirstOrDefault()?.Table ?? 0;
 
     public Bill(
         int billId,

@@ -7,6 +7,7 @@ namespace Servr.Infrastructure.Logger
     public class Logger : ILogger
     {
         private readonly string _logFilePath;
+        private readonly object _lock = new();
 
         public Logger(string logFilePath = "app.log")
         {
@@ -17,8 +18,11 @@ namespace Servr.Infrastructure.Logger
         public void Log(LogLevel level, string message)
         {
             string logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] - {message}";
-            using StreamWriter writer = new StreamWriter(_logFilePath, append: true);
-            writer.WriteLine(logMessage);
+            lock (_lock)
+            {
+                using StreamWriter writer = new StreamWriter(_logFilePath, append: true);
+                writer.WriteLine(logMessage);
+            }
         }
     }
 }

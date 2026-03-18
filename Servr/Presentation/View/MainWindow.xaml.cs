@@ -31,7 +31,7 @@ namespace Servr
             {
                 vm.OpenBillingRequested += billingVm =>
                 {
-                    new BillingWindow(billingVm) { Owner = this }.Show();
+                    new BillingWindow(billingVm) { Owner = this }.ShowDialog();
                 };
 
                 vm.SetTableRequested += current =>

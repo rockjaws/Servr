@@ -6,16 +6,17 @@ namespace Servr.Application.Billing;
 
 public class BillingService
 {
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
     private Dictionary<int, IBill> _bills = new();
     public IReadOnlyDictionary<int, IBill> Bills => _bills;
     private int _nextBillId = 1;
-    private readonly string _serverName = "Bo";
+    private readonly string _serverName;
 
-    public BillingService(ILogger logger)
+    public BillingService(ILogger logger, string serverName = "Bo")
     {
         _logger = logger;
+        _serverName = serverName;
     }
 
     public void ClearBill(int table)
@@ -24,13 +25,13 @@ public class BillingService
         _logger.Log(LogLevel.INFO, $"Bill cleared for table {table}.");
     }
 
-    public void ProcessBill(IBill bill) { }
-
     public void AddOrderToTable(int tableNumber, DiscountType discount, IOrder order)
     {
         if (_bills.TryGetValue(tableNumber, out var bill))
         {
             bill.Orders.Add(order);
+            if (discount != DiscountType.None)
+                bill.DiscountType = discount;
             _logger.Log(LogLevel.INFO, $"Order {order.OrderId} added to existing bill for table {tableNumber}.");
         }
         else
@@ -45,7 +46,7 @@ public class BillingService
         }
     }
 
-    public IBill GetBillForTable(int tableNumber)
+    public IBill? GetBillForTable(int tableNumber)
     {
         _bills.TryGetValue(tableNumber, out var bill);
         return bill;

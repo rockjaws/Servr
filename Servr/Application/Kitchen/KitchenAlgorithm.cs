@@ -7,7 +7,8 @@ namespace Servr.Application.Kitchen;
 public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
 {
     private readonly ILogger _logger;
-    private int _recievedOrders;
+    private readonly object _lock = new();
+    private int _receivedOrders;
     private int _ordersInProgress;
     private int _ordersReady;
     private Queue<IOrder> _queue;
@@ -19,10 +20,10 @@ public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
         set => SetProperty(ref _queue, value);
     }
 
-    public int RecievedOrders
+    public int ReceivedOrders
     {
-        get => _recievedOrders;
-        set => SetProperty(ref _recievedOrders, value);
+        get => _receivedOrders;
+        set => SetProperty(ref _receivedOrders, value);
     }
 
     public int OrdersInProgress
@@ -51,50 +52,64 @@ public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
         if (order == null || order.Food.Count <= 0)
             return;
 
-        RecievedOrders += 1;
+        TimeSpan orderTime = GetOrderTime(order);
 
-        TimeSpan? orderTime = GetOrderTime(order);
+        lock (_lock)
+        {
+            ReceivedOrders += 1;
 
-        if (orderTime == null)
-            return;
+            _logger.Log(
+                LogLevel.INFO,
+                $"Order: {order.OrderId} order time upon processing {orderTime}"
+            );
 
-        _logger.Log(
-            LogLevel.INFO,
-            $"Order: {order.OrderId} order time upon processing {orderTime.Value}"
-        );
-
-        _orderTime.Add(order, orderTime.Value);
-        Queue.Enqueue(order);
-        _logger.Log(
-            LogLevel.INFO,
-            $"Order: {order.OrderId} is now in queue, waiting for processing.."
-        );
+            _orderTime.Add(order, orderTime);
+            Queue.Enqueue(order);
+            _logger.Log(
+                LogLevel.INFO,
+                $"Order: {order.OrderId} is now in queue, waiting for processing.."
+            );
+        }
 
         _ = ProcessOrder();
     }
 
     private async Task ProcessOrder()
     {
-        if (_queue.Count <= 0)
-            return;
-        IOrder order = _queue.Dequeue();
-        if (!_orderTime.TryGetValue(order, out TimeSpan orderTime))
+        IOrder order;
+        TimeSpan orderTime;
+
+        lock (_lock)
         {
-            _logger.Log(LogLevel.WARNING, $"Order {order.OrderId} dequeued but no time entry found. Skipping.");
-            return;
+            if (_queue.Count <= 0)
+                return;
+            order = _queue.Dequeue();
+            if (!_orderTime.TryGetValue(order, out orderTime))
+            {
+                _logger.Log(LogLevel.WARNING, $"Order {order.OrderId} dequeued but no time entry found. Skipping.");
+                return;
+            }
+            _orderTime.Remove(order);
+
+            _logger.Log(LogLevel.INFO, $"Order {order.OrderId} for table {order.Table} started preparing. ETA: {orderTime.TotalSeconds}s.");
+            OrdersInProgress += 1;
         }
 
-        _logger.Log(LogLevel.INFO, $"Order {order.OrderId} for table {order.Table} started preparing. ETA: {orderTime.TotalSeconds}s.");
-        OrdersInProgress += 1;
         order.UpdateOrderStatus(OrderStatus.Preparing);
         await Task.Delay(orderTime);
         order.UpdateOrderStatus(OrderStatus.Ready);
-        OrdersReady += 1;
-        _logger.Log(LogLevel.INFO, $"Order: {order.OrderId} Ready for table {order.Table}");
+
+        lock (_lock)
+        {
+            OrdersInProgress -= 1;
+            OrdersReady += 1;
+            _logger.Log(LogLevel.INFO, $"Order: {order.OrderId} Ready for table {order.Table}");
+        }
+
         OrderReady?.Invoke(order);
     }
 
-    private TimeSpan? GetOrderTime(IOrder order)
+    private TimeSpan GetOrderTime(IOrder order)
     {
         int time = 0;
         foreach (IMenuItem item in order.Food)
