@@ -23,7 +23,8 @@
             <!-- Order View -->
             <Border Background="White" BorderBrush="#E0E0E0" BorderThickness="1">
                 <StackPanel>
-                    <TextBlock Text="Order" FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
+                    <TextBlock Text="{Binding TableNumber, StringFormat='Table {0}', FallbackValue='No table set'}"
+           FontSize="18" FontWeight="Bold" Foreground="#2C3E50" Margin="0,0,0,20"/>
                     <ScrollViewer MaxHeight="500" VerticalScrollBarVisibility="Auto">
                         <ItemsControl ItemsSource="{Binding OrderView}">
                             <ItemsControl.ItemTemplate>
@@ -93,46 +94,62 @@
 </Border>
         </Grid>
 
-        <!-- Right column -->
-        <StackPanel Grid.Column="1" Background="#FFFFFF">
-            <!-- Category buttons -->
-            <ItemsControl ItemsSource="{Binding CategoryOptions}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="4">
-                            <Button Content="{Binding}"
-                                    Command="{Binding DataContext.SelectCategoryCommand,
-                                        RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding}"/>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+<!-- Right column -->
+<Grid Grid.Column="1">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
 
-            <!-- Items list -->
-            <ListView ItemsSource="{Binding CurrentItems}" SelectedItem="{Binding SelectedItem}">
-                <ListView.Resources>
-                    <DataTemplate DataType="{x:Type model:MenuItem}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Price, StringFormat={}{0:N2} kr}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                    <DataTemplate DataType="{x:Type model:Drink}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Name}" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Price, StringFormat={}{0:N2} kr}" Margin="0,0,10,0"/>
-                            <TextBlock Text="{Binding Volume, StringFormat={}{0} cl}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.Resources>
-            </ListView>
-        </StackPanel>
+    <!-- Category buttons -->
+    <ItemsControl Grid.Row="0" ItemsSource="{Binding CategoryOptions}" Margin="8,8,8,4">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <UniformGrid Rows="1"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Button Margin="3" Height="52"
+                        Content="{Binding}"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Command="{Binding DataContext.SelectCategoryCommand,
+                            RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}"/>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <!-- Item buttons -->
+    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+    <ItemsControl ItemsSource="{Binding CurrentItems}">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" Margin="8"/>
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Button Width="120" Height="120" Margin="4"
+                        Command="{Binding DataContext.AddItemCommand,
+                            RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}"
+                                   FontSize="13" FontWeight="SemiBold"
+                                   TextWrapping="Wrap" TextAlignment="Center"
+                                   MaxWidth="100"/>
+                        <TextBlock Text="{Binding Price, StringFormat={}{0:N0} kr}"
+                                   FontSize="12" TextAlignment="Center"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+                </Button>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</ScrollViewer>
+</Grid>
 
         <!-- Toast Notification -->
         <Border x:Name="ToastNotification"
