@@ -77,8 +77,13 @@ public sealed class KitchenAlgorithm : ObservableObject, IKitchenObserver
             return;
         IOrder order = _queue.Dequeue();
         if (!_orderTime.TryGetValue(order, out TimeSpan orderTime))
+        {
+            _logger.Log(LogLevel.WARNING, $"Order {order.OrderId} dequeued but no time entry found. Skipping.");
             return;
+        }
 
+        _logger.Log(LogLevel.INFO, $"Order {order.OrderId} for table {order.Table} started preparing. ETA: {orderTime.TotalSeconds}s.");
+        OrdersInProgress += 1;
         order.UpdateOrderStatus(OrderStatus.Preparing);
         await Task.Delay(orderTime);
         order.UpdateOrderStatus(OrderStatus.Ready);

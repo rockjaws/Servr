@@ -1,16 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.IO;
+
 using Servr.Domain.Interface;
 
 namespace Servr.Infrastructure.Logger
 {
-  public class Logger : ILogger
-  {
-    public void Log(LogLevel level, string message)
+    public class Logger : ILogger
     {
-      string logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] - {message}";
-      // implement save to file
+        private readonly string _logFilePath;
+
+        public Logger(string logFilePath = "app.log")
+        {
+            using StreamWriter writer = new StreamWriter(_logFilePath, append: false); // Overwrite/reset the file on startup
+            _logFilePath = logFilePath;
+        }
+
+        public void Log(LogLevel level, string message)
+        {
+            string logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{level}] - {message}";
+            using StreamWriter writer = new StreamWriter(_logFilePath, append: true);
+            writer.WriteLine(logMessage);
+        }
     }
-  }
 }

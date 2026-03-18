@@ -134,6 +134,7 @@ namespace Servr.Presentation.ViewModel
             var vm = new BillingViewModel(bill);
             vm.PaymentCompleted += _ =>
             {
+                _logger.Log(LogLevel.INFO, $"Payment completed for table {tableAtTimeOfPay}. Bill total: {bill.BillTotal:N2} kr.");
                 _billingService.ClearBill(tableAtTimeOfPay);
                 OnPropertyChanged(nameof(CurrentTableBill));
             };
@@ -179,13 +180,21 @@ namespace Servr.Presentation.ViewModel
 
         private void ApplyExtra(IItem? item)
         {
-            if (item == null) return;
+            if (item == null)
+            {
+                _logger.Log(LogLevel.WARNING, "ApplyExtra called with null item.");
+                return;
+            }
             var result = AddExtraRequested?.Invoke(item);
             if (result == null) return;
 
             var (extraName, extraPrice, isAdd) = result.Value;
             var index = OrderView.IndexOf(item);
-            if (index < 0) return;
+            if (index < 0)
+            {
+                _logger.Log(LogLevel.WARNING, $"Item '{item.Name}' not found in OrderView when applying extra.");
+                return;
+            }
 
             var price = isAdd ? extraPrice : 0m;
             var label = isAdd ? extraName : $"No {extraName}";

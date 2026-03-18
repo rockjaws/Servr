@@ -21,6 +21,7 @@ public class BillingService
     public void ClearBill(int table)
     {
         _bills.Remove(table);
+        _logger.Log(LogLevel.INFO, $"Bill cleared for table {table}.");
     }
 
     public void ProcessBill(IBill bill) { }
@@ -28,14 +29,20 @@ public class BillingService
     public void AddOrderToTable(int tableNumber, DiscountType discount, IOrder order)
     {
         if (_bills.TryGetValue(tableNumber, out var bill))
+        {
             bill.Orders.Add(order);
+            _logger.Log(LogLevel.INFO, $"Order {order.OrderId} added to existing bill for table {tableNumber}.");
+        }
         else
+        {
             _bills[tableNumber] = new Bill(
                 _nextBillId++,
                 discount,
                 _serverName,
                 new List<IOrder> { order }
             );
+            _logger.Log(LogLevel.INFO, $"New bill (ID {_nextBillId - 1}) created for table {tableNumber} with discount '{discount}'.");
+        }
     }
 
     public IBill GetBillForTable(int tableNumber)
