@@ -80,6 +80,7 @@ namespace Servr.Presentation.ViewModel
         public ICommand DiscountCommand { get; }
         public ICommand PayCommand { get; }
         public ICommand AddExtraCommand { get; }
+        public ICommand AddItemCommand { get; }
 
         public MainViewModel(
             ILogger logger,
@@ -123,6 +124,10 @@ namespace Servr.Presentation.ViewModel
             );
             AddExtraCommand = new RelayCommand(
                 param => ApplyExtra(param as IItem),
+                param => param is IItem
+            );
+            AddItemCommand = new RelayCommand(
+                param => { if (param is IItem item) AddItemToOrder(item); },
                 param => param is IItem
             );
         }
